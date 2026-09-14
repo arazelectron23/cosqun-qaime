@@ -29,15 +29,17 @@ body {
    BLOKU ENİNƏ 600PX SAXLAYIB DAHA DA YAXINLAŞDIRAN KONTEYNER (ZOOM)
    ========================================================================= */
 .app-container {
-    max-width: 550px !important;
+    max-width: 580px !important;
     width: 100% !important;
     
     /* Mərkəzləşdirmək üçün margin-i auto edirik */
     margin: 20px auto !important; 
+    transform: translateX(-16px) ; /* Mərkəzləşdirmək üçün əlavə transform */
+    
 
     /* Yaxınlaşdırma dərəcəsi və mərkəz nöqtəsi */
-    zoom: 1.7 !important;
-    -moz-transform: scale(1.7);
+    zoom: 1.6 !important;
+    -moz-transform: scale(1.6);
     -moz-transform-origin: top center; /* Miqyaslanmanın mərkəzdən başlaması üçün */
 }
 
@@ -440,25 +442,25 @@ body {
         width: 100vw !important;
     }
 
- .app-container {
+.app-container {
     max-width: 550px !important;
     width: 100% !important;
     
-    /* Konteynerin özünü ekranda tam mərkəzə salır */
+    /* Səhifədə tam mərkəzə salır */
     margin: 20px auto !important; 
     
-    /* Daxili elementlərin sola yox, mərkəzə/enə uyğun paylanmasını təmin edir */
+    /* Daxili elementləri mərkəzləşdirir */
     display: flex;
     flex-direction: column;
-    align-items: center; /* Bütün blokları daxildə mərkəzləşdirir */
+    align-items: center;
 
-    /* Yaxınlaşdırma dərəcəsi və mərkəz nöqtəsi */
+    /* Yaxınlaşdırma və miqyaslama */
     zoom: 1.7 !important;
     -moz-transform: scale(1.7);
     -moz-transform-origin: top center;
 }
 
-/* İçindəki bütün əsas blokların eninin konteyneri tam doldurmasını təmin edirik ki, səliqəli mərkəzdə dursunlar */
+/* İçindəki bütün əsas blokların eninin tam oturması üçün */
 .control-panel,
 .invoice-box,
 .waiting-panel,
