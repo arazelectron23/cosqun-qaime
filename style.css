@@ -29,12 +29,12 @@ body {
    BLOKU ENİNƏ 600PX SAXLAYIB DAHA DA YAXINLAŞDIRAN KONTEYNER (ZOOM)
    ========================================================================= */
 .app-container {
-    max-width: 580px !important;
+    max-width: 570px !important;
     width: 100% !important;
     
     /* Mərkəzləşdirmək üçün margin-i auto edirik */
     margin: 20px auto !important; 
-    transform: translateX(-16px) ; /* Mərkəzləşdirmək üçün əlavə transform */
+    transform: translateX(-18px) ; /* Mərkəzləşdirmək üçün əlavə transform */
     
 
     /* Yaxınlaşdırma dərəcəsi və mərkəz nöqtəsi */
