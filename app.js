@@ -95,6 +95,7 @@ let currentActiveDocId = null;
 let dbProductsList = []; 
 let allWaitingInvoices = []; 
 let allArchivedInvoices = [];
+let autoSaveTimer = null; // Arxa planda gözləmə siyahısına yazmaq üçün taymer
 
 document.addEventListener('DOMContentLoaded', () => {
     // Əvvəlki yarımçıq qaiməni yoxlayırıq
@@ -1312,8 +1313,11 @@ function renderTemplateModalList(list) {
     });
 }
 
-// Yarımçıq qalmış qaiməni yadda saxlayan funksiya
 function saveDraftToLocalStorage() {
+    // Hər hərf yazıldıqda əvvəlki taymeri sıfırlayırıq ki, yazmağınıza mane olmasın
+    clearTimeout(autoSaveTimer);
+
+    // 1. Dərhal yerli olaraq localStorage-də saxlayırıq (sürətli olsun deyə)
     const draftData = {
         customerName: customerInput ? customerInput.value : '',
         invoiceDate: dateInput ? dateInput.value : '',
@@ -1321,4 +1325,42 @@ function saveDraftToLocalStorage() {
         currentActiveDocId: currentActiveDocId
     };
     localStorage.setItem('invoice_draft', JSON.stringify(draftData));
+
+    // 2. Yazı bitdikdən (və ya fasilə verdikdən) 1 saniyə sonra arxa planda gözləmə siyahısına (Firebase-ə) göndəririk
+    autoSaveTimer = setTimeout(async () => {
+        const customerName = customerInput ? customerInput.value.trim() : "";
+        const isFirstItemEmpty = invoiceItems.length === 1 && !invoiceItems[0].name.trim();
+
+        // Əgər müştəri adı boşdursa və ya məhsul yoxdursa, arxa planda gözləməyə atmağa ehtiyac yoxdur
+        if (!customerName || isFirstItemEmpty) return;
+
+        const selectedDate = dateInput && dateInput.value ? new Date(dateInput.value) : new Date();
+
+        const data = {
+            customerName: customerName,
+            items: invoiceItems,
+            status: "waiting",
+            updatedAt: selectedDate
+        };
+
+        try {
+            if (currentActiveDocId) {
+                // Əgər artıq bazada varsa, səssizcə yenilə
+                await updateDoc(doc(db, "waiting_invoices", currentActiveDocId), data);
+            } else {
+                // Əgər yeni qaimədirsə, avtomatik gözləmə siyahısına əlavə et və ID-ni götür
+                const docRef = await addDoc(collection(db, "waiting_invoices"), data);
+                currentActiveDocId = docRef.id;
+                
+                // Düymənin adını 'Yenilə' olaraq dəyişək ki, artıq gözləmədə olduğunu biləsiniz
+                if (btnWaiting) btnWaiting.textContent = 'Yenilə';
+            }
+            // Səssizcə gözləmə siyahısını arxa planda yeniləyirik (ekranı yığmadan)
+            if (typeof fetchWaitingList === 'function') {
+                fetchWaitingList();
+            }
+        } catch (e) {
+            console.error("Arxa planda gözləməyə alma xətası:", e);
+        }
+    }, 1000); // 1 saniyə gözləmə müddəti
 }
